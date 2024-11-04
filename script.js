@@ -1,41 +1,95 @@
-// Simulated live updates for security threats
-const threats = [
-    "New zero-day vulnerability discovered in popular CMS",
-    "Cryptocurrency exchange suffers major data breach",
-    "State-sponsored hacking group targets healthcare sector",
-    "Critical security flaw found in widely-used networking protocol",
-    "AI-powered malware evades traditional antivirus detection"
-];
+document.addEventListener('DOMContentLoaded', () => {
+    // Loader Animation
+    const loader = document.querySelector('.loader');
+    const progress = document.querySelector('.progress');
+    
+    let width = 0;
+    const interval = setInterval(() => {
+        if (width >= 100) {
+            clearInterval(interval);
+            setTimeout(() => {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                }, 500);
+            }, 500);
+        } else {
+            width += 2;
+            progress.style.width = width + '%';
+        }
+    }, 50);
 
-function updateThreats() {
-    const threatsList = document.getElementById('threats-list');
-    threatsList.innerHTML = '';
-    const shuffled = threats.sort(() => 0.5 - Math.random());
-    shuffled.slice(0, 3).forEach(threat => {
-        const li = document.createElement('li');
-        li.textContent = threat;
-        threatsList.appendChild(li);
+    // Glitch Text Effect
+    const glitchText = document.querySelector('.glitch-text');
+    if (glitchText) {
+        setInterval(() => {
+            if (Math.random() > 0.95) {
+                glitchText.style.textShadow = `
+                    ${Math.random() * 10}px ${Math.random() * 10}px ${Math.random() * 10}px rgba(0,255,0,0.7),
+                    ${Math.random() * -10}px ${Math.random() * 10}px ${Math.random() * 10}px rgba(255,0,0,0.7)
+                `;
+                setTimeout(() => {
+                    glitchText.style.textShadow = 'none';
+                }, 50);
+            }
+        }, 100);
+    }
+
+    // Smooth Scrolling
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
     });
-}
 
-setInterval(updateThreats, 10000); // Update every 10 seconds
+    // Active Navigation Link Update
+    const sections = document.querySelectorAll('section');
+    const navLinks = document.querySelectorAll('.nav-links a');
 
-// Simple animation for the threat map
-gsap.to("#threat-map", {
-    backgroundColor: "#1a202c",
-    duration: 2,
-    repeat: -1,
-    yoyo: true
+    window.addEventListener('scroll', () => {
+        let current = '';
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            const sectionHeight = section.clientHeight;
+            if (scrollY >= sectionTop - 60) {
+                current = section.getAttribute('id');
+            }
+        });
+
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href').slice(1) === current) {
+                link.classList.add('active');
+            }
+        });
+    });
+
+    // Feature Card Hover Effect
+    const cards = document.querySelectorAll('.feature-card');
+    cards.forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            
+            const rotateX = (y - centerY) / 10;
+            const rotateY = -(x - centerX) / 10;
+            
+            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.05, 1.05, 1.05)`;
+        });
+
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = 'none';
+        });
+    });
 });
-
-// Hover effect for navigation items
-document.querySelectorAll('nav a').forEach(link => {
-    link.addEventListener('mouseenter', () => {
-        gsap.to(link, {color: "#4ade80", duration: 0.3});
-    });
-    link.addEventListener('mouseleave', () => {
-        gsap.to(link, {color: "#f3f4f6", duration: 0.3});
-    });
-});
-
-// Add any additional JavaScript functionality here
